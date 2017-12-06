@@ -49,15 +49,11 @@ public class Solver {
     MinPQ<Move> moves = new MinPQ<Move>();
     moves.insert(new Move(initial));
 
-//    MinPQ<Move> twinMoves = new MinPQ<Move>();
-//    twinMoves.insert(new Move(initial.twin()));
-
     while(true) {
       lastMove = expand(moves);
       if (lastMove != null) {
         return;
       }
-//      if (lastMove != null || expand(twinMoves) != null) return;
     }
   }
 
