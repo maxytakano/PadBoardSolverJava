@@ -96,15 +96,6 @@ public class Board {
 //    return row*dimension + col + 1;
 //  }
 
-  // TODO: adapt m x n, figure out what twin does
-  public Board twin() {
-    for (int row = 0; row < blocks.length; row++)
-      for (int col = 0; col < blocks.length - 1; col++)
-        if (!isSpace(blocks[row][col]) && !isSpace(blocks[row][col + 1]))
-          return new Board(swap(row, col, row, col + 1));
-    throw new RuntimeException();
-  }
-
   // returns new board state with two blocks swapped
   private int[][] swap(int row1, int col1, int row2, int col2) {
     int[][] copy = copy(blocks);

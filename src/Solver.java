@@ -20,8 +20,7 @@ public class Solver {
     public int compareTo(Move move) {
 //      return (this.board.manhattan() - move.board.manhattan()) + (this.numMoves - move.numMoves);
       int score = 1 * (this.board.hamming() - move.board.hamming()) + (this.numMoves - move.numMoves);
-//      System.out.println("current score : " + this.board.hamming());
-        return score;
+      return score;
     }
   }
 
@@ -31,12 +30,11 @@ public class Solver {
     if(moves.isEmpty()) return null;
     Move bestMove = moves.delMin();
     if (bestMove.board.isGoal()) {
-      System.out.println("is Goal was true");
       return bestMove;
     }
     for (Board neighbor : bestMove.board.neighbors()) {
       if (bestMove.previous == null || !neighbor.equals(bestMove.previous.board)) {
-        if (neighbor.hamming() < 3) {
+        if (neighbor.hamming() < 2) {
           System.out.println(neighbor + " assd " + neighbor.hamming());
         }
         moves.insert(new Move(neighbor, bestMove));
