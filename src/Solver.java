@@ -35,7 +35,7 @@ public class Solver {
     for (Board neighbor : bestMove.board.neighbors()) {
       if (bestMove.previous == null || !neighbor.equals(bestMove.previous.board)) {
         if (neighbor.hamming() < 2) {
-          System.out.println(neighbor + " assd " + neighbor.hamming());
+//          System.out.println(neighbor + " assd " + neighbor.hamming());
         }
         moves.insert(new Move(neighbor, bestMove));
       }
@@ -43,8 +43,12 @@ public class Solver {
     return null;
   }
 
+  /**
+   *
+   * @param initial
+   */
   public Solver(Board initial) {
-    MinPQ<Move> moves = new MinPQ<Move>();
+    MinPQ<Move> moves = new MinPQ<>();
     moves.insert(new Move(initial));
 
     while(true) {
@@ -55,18 +59,27 @@ public class Solver {
     }
   }
 
+  /**
+   * @return boolean - true if board was solved
+   */
   public boolean isSolvable() {
     return (lastMove != null);
   }
 
-  public int moves() {
+  /**
+   * @return int - minimum number of moves to solve the board
+   */
+  public int minMoves() {
     return isSolvable() ? lastMove.numMoves : -1;
   }
 
+  /**
+   * @return Stack - stack of board states used in solution.
+   */
   public Iterable<Board> solution() {
     if (!isSolvable()) return null;
 
-    Stack<Board> moves = new Stack<Board>();
+    Stack<Board> moves = new Stack<>();
     while(lastMove != null) {
       moves.push(lastMove.board);
       lastMove = lastMove.previous;
