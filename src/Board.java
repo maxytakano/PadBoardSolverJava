@@ -34,14 +34,14 @@ public class Board {
   /**
    * @return boolean - true if block == 0 (SPACE)
    */
-  private boolean isSpace(int block) {
-    return block == SPACE;
+  private boolean isSpace(int cell) {
+    return cell == SPACE;
   }
 
   public boolean isGoal() {
-    for (int row = 0; row < startPosition.length; row++)
-      for (int col = 0; col < startPosition.length; col++)
-        if (blockIsNotInPlace(row, col)) {
+    for (int x = 0; x < startPosition.length; x++)
+      for (int y = 0; y < startPosition.length; y++)
+        if (blockIsNotInPlace(x, y)) {
           return false;
         }
 
@@ -180,8 +180,8 @@ public class Board {
 
   // ?? bugged?
 //  private boolean blockIsInPlace(int row, int col) {
-//    int block = blocks[row][col];
-//    int targetBlock = target[row][col];
+//    int block = startPosition[row][col];
+//    int targetBlock = targetPosition[row][col];
 //
 //    return !isSpace(block) && block != goalFor(row, col);
 //  }
@@ -195,35 +195,41 @@ public class Board {
   // TODO: refactor m x n
   public int hamming() {
     int count = 0;
-    for (int row = 0; row < startPosition.length; row++)
-      for (int col = 0; col < startPosition.length; col++)
-        if (blockIsNotInPlace(row, col)) count++;
+    for (int x = 0; x < startPosition.length; x++)
+      for (int y = 0; y < startPosition.length; y++)
+        if (blockIsNotInPlace(x, y)) count++;
 
     return count;
   }
 
 //  // TODO: refactor m x n (doesnt work currently)
-//  public int manhattan() {
-//    int sum = 0;
-//    for (int row = 0; row < blocks.length; row++)
-//      for (int col = 0; col < blocks.length; col++)
-//        sum += calculateDistances(row, col);
-//
-//    return sum;
-//  }
-//
-//  private int calculateDistances(int row, int col) {
-//    int block = blocks[row][col];
-//
-//    return (isSpace(block)) ? 0 : Math.abs(row - row(block)) + Math.abs(col - col(block));
-//  }
-//
-//  private int row (int block) {
-//    return (block - 1) / size;
-//  }
-//
-//  private int col (int block) {
-//    return (block - 1) % size;
-//  }
+  public int manhattan() {
+    int sum = 0;
+    for (int x = 0; x < startPosition.length; x++)
+      for (int y = 0; y < startPosition.length; y++)
+        sum += calculateDistances(x, y);
+
+    return sum;
+  }
+
+  private int calculateDistances(int x, int y) {
+    int cell = startPosition[x][y];
+
+    return (isSpace(cell)) ? 0 : Math.abs(x - getRow(cell)) + Math.abs(y - col(cell));
+  }
+
+  /**
+   * @return which row the given cell is on.
+   */
+  private int getRow (int cell) {
+    return (cell - 1) / size;
+  }
+
+  /**
+   * @return which col the given cell is on.
+   */
+  private int col (int cell) {
+    return (cell - 1) % size;
+  }
 
 }
