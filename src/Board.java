@@ -49,21 +49,45 @@ public class Board {
   }
 
   /**
-   * ???
-   * @return boolean - ???
+   * Calculates a unique hashcode to this board state.
+   * @return int - unique hashcode to this board state
    */
-  public boolean equals(Board otherBoard) {
-    // Check if comparing against self
-    if (otherBoard==this) return true;
-    // Check if invalid board comparison
-    if (otherBoard==null ||
-        otherBoard.startPosition.length != startPosition.length) {
+  @Override
+  public int hashCode() {
+    int hash = java.util.Arrays.deepHashCode(startPosition);
+    return hash;
+  }
+
+  /**
+   * Checks for object equality and compares the start position.
+   * @return boolean - true if board is equal to another
+   */
+  @Override
+  public boolean equals(Object otherBoard) {
+//    System.out.println("calling equals in board");
+
+    // 1. Check if its a Move object.
+    if (otherBoard.getClass() != this.getClass()){
       return false;
     }
 
+    // 2. Check if we are comparing against our self.
+    Board castedBoard = (Board) otherBoard;
+    if (this == castedBoard) {
+      return true;
+    }
+
+    // 3. Check if invalid board comparison
+    if (castedBoard==null ||
+        castedBoard.startPosition.length != startPosition.length) {
+      return false;
+    }
+
+    // 4. Otherwise compare boards with the other move.
+
     for (int x = 0; x < startPosition.length; x++) {
       for (int y = 0; y < startPosition.length; y++) {
-        boolean condition1 = otherBoard.startPosition[x][y] != startPosition[x][y];
+        boolean condition1 = castedBoard.startPosition[x][y] != startPosition[x][y];
         if (condition1 && targetPosition[x][y] != 99) {
           return false;
         }
@@ -72,6 +96,12 @@ public class Board {
 
     return true;
   }
+//
+//  @Override
+//  public int compareTo(Board otherBoard) {
+//
+//  }
+
 
   /**
    * TODO: adapt m x n

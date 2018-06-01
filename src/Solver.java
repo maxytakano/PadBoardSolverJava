@@ -34,24 +34,24 @@ public class Solver {
      * @param otherMove - other move
      * @return true if other move's board is the same.
      */
-    @Override
-    public boolean equals(Object otherMove) {
-      // 1. Check if its a Move object.
-      if (otherMove.getClass() != this.getClass()){
-        return false;
-      }
-
-      // 2. Check if we are comparing against our self.
-      Move castedMove = (Move) otherMove;
-      if (this == castedMove) {
-        return true;
-      }
-
-      // 3. Otherwise compare boards with the other move.
-      Board otherBoard = castedMove.board;
-
-      return this.board.equals(otherBoard);
-    }
+//    @Override
+//    public boolean equals(Object otherMove) {
+//      // 1. Check if its a Move object.
+//      if (otherMove.getClass() != this.getClass()){
+//        return false;
+//      }
+//
+//      // 2. Check if we are comparing against our self.
+//      Move castedMove = (Move) otherMove;
+//      if (this == castedMove) {
+//        return true;
+//      }
+//
+//      // 3. Otherwise compare boards with the other move.
+//      Board otherBoard = castedMove.board;
+//
+//      return this.board.equals(otherBoard);
+//    }
   }
 
   // Final move needed for the goal, assigned when the goal is reached.
@@ -79,6 +79,7 @@ public class Solver {
       Move bestMove = frontier.delMin();
       explored.add(bestMove.board);
 
+
       if (bestMove.board.isGoal()) {
         lastMove = bestMove;
         return;
@@ -87,11 +88,14 @@ public class Solver {
       for (Board neighbor : bestMove.board.neighbors()) {
         // neighbor not in frontier U explored
         boolean criticalCheck = (bestMove.previous == null || !neighbor.equals(bestMove.previous.board));
+
         // TODO: memory optimization is SLOW can this be sped up?
 //        boolean memoryOptimization = (!isBoardInPQ(frontier, neighbor) && !explored.contains(neighbor));
         boolean memoryOptimization = !explored.contains(neighbor);
 
         boolean finalCheck = criticalCheck && memoryOptimization;
+//        boolean finalCheck = memoryOptimization;
+
         if (finalCheck) {
           frontier.insert(new Move(neighbor, bestMove));
         }
