@@ -27,31 +27,6 @@ public class Solver {
 //      return (this.board.manhattan() - move.board.manhattan()) + (this.numMoves - move.numMoves);
       return (this.board.hamming() - move.board.hamming()) + (this.numMoves - move.numMoves);
     }
-
-    // TODO: actually not needed, compare boards directly
-    /**
-     * Compares against another move by comparing boards.
-     * @param otherMove - other move
-     * @return true if other move's board is the same.
-     */
-//    @Override
-//    public boolean equals(Object otherMove) {
-//      // 1. Check if its a Move object.
-//      if (otherMove.getClass() != this.getClass()){
-//        return false;
-//      }
-//
-//      // 2. Check if we are comparing against our self.
-//      Move castedMove = (Move) otherMove;
-//      if (this == castedMove) {
-//        return true;
-//      }
-//
-//      // 3. Otherwise compare boards with the other move.
-//      Board otherBoard = castedMove.board;
-//
-//      return this.board.equals(otherBoard);
-//    }
   }
 
   // Final move needed for the goal, assigned when the goal is reached.
