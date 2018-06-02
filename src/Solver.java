@@ -77,6 +77,9 @@ public class Solver {
 
     while (!frontier.isEmpty()) {
       Move bestMove = frontier.delMin();
+      if (explored.contains(bestMove.board)) {
+        System.out.println("dupe found" + explored.size());
+      }
       explored.add(bestMove.board);
 
 
