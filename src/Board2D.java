@@ -1,6 +1,6 @@
 import java.util.LinkedList;
 
-public class Board {
+public class Board2D {
   private static final int SPACE = 0;
 
   private int[][] startPosition;
@@ -11,15 +11,15 @@ public class Board {
 
   /************** Constructors **************/
 
-  // Constructor used to setup initial board
-  public Board(int[][] startPosition, int[][] targetPosition) {
+  // Constructor used to setup initial Board2D
+  public Board2D(int[][] startPosition, int[][] targetPosition) {
     this.startPosition = copy2d(startPosition);
     this.targetPosition = copy2d(targetPosition);
     size = startPosition.length;
   }
 
-  // Internal use Constructor for board permutations only?
-  public Board(int[][] startPosition) {
+  // Internal use Constructor for Board2D permutations only?
+  public Board2D(int[][] startPosition) {
     this.startPosition = copy2d(startPosition);
     size = startPosition.length;
   }
@@ -45,8 +45,8 @@ public class Board {
   }
 
   /**
-   * Calculates a unique hashcode to this board state.
-   * @return int - unique hashcode to this board state
+   * Calculates a unique hashcode to this Board2D state.
+   * @return int - unique hashcode to this Board2D state
    */
   @Override
   public int hashCode() {
@@ -60,37 +60,37 @@ public class Board {
 
   /**
    * Checks for object equality and compares the start position.
-   * @return boolean - true if board is equal to another
+   * @return boolean - true if Board2D is equal to another
    */
   @Override
-  public boolean equals(Object otherBoard) {
-    if (hashCode() != otherBoard.hashCode()) {
+  public boolean equals(Object otherBoard2D) {
+    if (hashCode() != otherBoard2D.hashCode()) {
       return false;
     }
 
-//    System.out.println("calling equals in board");
+//    System.out.println("calling equals in Board2D");
 
     // 1. Check if its a Move object.
-//    if (otherBoard.getClass() != this.getClass()){
+//    if (otherBoard2D.getClass() != this.getClass()){
 //      return false;
 //    }
 
     // 2. Check if we are comparing against our self.
-    Board castedBoard = (Board) otherBoard;
-    if (this == castedBoard) {
+    Board2D castedBoard2D = (Board2D) otherBoard2D;
+    if (this == castedBoard2D) {
       return true;
     }
 
-    // 3. Check if invalid board comparison
-    if (castedBoard==null ||
-        castedBoard.startPosition.length != startPosition.length) {
+    // 3. Check if invalid Board2D comparison
+    if (castedBoard2D==null ||
+        castedBoard2D.startPosition.length != startPosition.length) {
       return false;
     }
 
-    // 4. Otherwise compare boards with the other move.
+    // 4. Otherwise compare Board2Ds with the other move.
     for (int x = 0; x < startPosition.length; x++) {
       for (int y = 0; y < startPosition.length; y++) {
-        if (castedBoard.startPosition[x][y] != startPosition[x][y]) {
+        if (castedBoard2D.startPosition[x][y] != startPosition[x][y]) {
           return false;
         }
       }
@@ -102,33 +102,33 @@ public class Board {
   /**
    * TODO: adapt m x n
    * Generates linked list of possible neighbors based on moving the SPACE up, down, left, or right.
-   * @return LinkedList<Board> - linked list of neighbor board states
+   * @return LinkedList<Board2D> - linked list of neighbor Board2D states
    */
-  public Iterable<Board> neighbors() {
-    LinkedList<Board> neighbors = new LinkedList<>();
+  public Iterable<Board2D> neighbors() {
+    LinkedList<Board2D> neighbors = new LinkedList<>();
 
     int[] spaceLocation = getSpaceLocation();
     int spaceX = spaceLocation[0];
     int spaceY = spaceLocation[1];
 
-    // Check if left of space is on board.
+    // Check if left of space is on Board2D.
     if (spaceX > 0) {
-      Board shiftLeft = swapCells(spaceX, spaceY, spaceX - 1, spaceY);
+      Board2D shiftLeft = swapCells(spaceX, spaceY, spaceX - 1, spaceY);
       neighbors.add(shiftLeft);
     }
     // Right of space.
     if (spaceX < size - 1) {
-      Board shiftRight = swapCells(spaceX, spaceY, spaceX + 1, spaceY);
+      Board2D shiftRight = swapCells(spaceX, spaceY, spaceX + 1, spaceY);
       neighbors.add(shiftRight);
     }
     // Below the space.
     if (spaceY > 0) {
-      Board shiftDown = swapCells(spaceX, spaceY, spaceX, spaceY - 1);
+      Board2D shiftDown = swapCells(spaceX, spaceY, spaceX, spaceY - 1);
       neighbors.add(shiftDown);
     }
     // Above the space.
     if (spaceY < size - 1) {
-      Board shiftUp = swapCells(spaceX, spaceY, spaceX, spaceY + 1);
+      Board2D shiftUp = swapCells(spaceX, spaceY, spaceX, spaceY + 1);
       neighbors.add(shiftUp);
     }
 
@@ -137,21 +137,21 @@ public class Board {
 
   /**
    * Takes two cell positions from startPosition and swaps them.
-   * @return Board - board with the cell position swapped
+   * @return Board2D - Board2D with the cell position swapped
    */
-  private Board swapCells(int x1, int y1, int x2, int y2) {
+  private Board2D swapCells(int x1, int y1, int x2, int y2) {
     int[][] copy = copy2d(startPosition);
     int tmp = copy[x1][y1];
     copy[x1][y1] = copy[x2][y2];
     copy[x2][y2] = tmp;
 
-    return new Board(copy);
+    return new Board2D(copy);
   }
 
   /**
    * TODO: adapt m x n
    * TODO: refactor to support moving without a space cell
-   * Finds where the space is ('0') on the board.
+   * Finds where the space is ('0') on the Board2D.
    * @return Tuple[x][y] - Space's location
    */
   private int[] getSpaceLocation() {
@@ -171,8 +171,8 @@ public class Board {
 
   /**
    * TODO: adapt m x n
-   * Returns board string for pretty print.
-   * @return String - stringified board
+   * Returns Board2D string for pretty print.
+   * @return String - stringified Board2D
    */
   public String toString() {
     StringBuilder str = new StringBuilder();
@@ -216,7 +216,7 @@ public class Board {
 //    return row*size + col + 1;
 //  }
 
-  /************** Board solve algorithm methods **************/
+  /************** Board2D solve algorithm methods **************/
 
   // TODO: refactor m x n
   public int hamming() {
@@ -234,7 +234,7 @@ public class Board {
     return hammingDistance;
   }
 
-// TODO: refactor m x n
+  // TODO: refactor m x n
 // TODO: (doesnt work currently)
   public int manhattan() {
     int sum = 0;
