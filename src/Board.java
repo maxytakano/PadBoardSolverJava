@@ -6,6 +6,7 @@ public class Board {
   private int[][] startPosition;
   private static int[][] targetPosition; // TODO: why does this have to be static to work...
   private int size; // TODO: refactor m x n
+  private Integer hammingDistance;
 
   /************** Constructors **************/
 
@@ -39,13 +40,7 @@ public class Board {
   }
 
   public boolean isGoal() {
-    for (int x = 0; x < startPosition.length; x++)
-      for (int y = 0; y < startPosition.length; y++)
-        if (blockIsNotInPlace(x, y)) {
-          return false;
-        }
-
-    return true;
+    return (hammingDistance != null && hammingDistance == 0);
   }
 
   /**
@@ -224,15 +219,22 @@ public class Board {
 
   // TODO: refactor m x n
   public int hamming() {
+    if (hammingDistance != null) {
+      return hammingDistance;
+    }
+
     int count = 0;
     for (int x = 0; x < startPosition.length; x++)
       for (int y = 0; y < startPosition.length; y++)
         if (blockIsNotInPlace(x, y)) count++;
 
-    return count;
+    hammingDistance = new Integer(count);
+
+    return hammingDistance;
   }
 
-//  // TODO: refactor m x n (doesnt work currently)
+// TODO: refactor m x n
+// TODO: (doesnt work currently)
   public int manhattan() {
     int sum = 0;
     for (int x = 0; x < startPosition.length; x++)

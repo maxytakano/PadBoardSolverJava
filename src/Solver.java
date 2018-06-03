@@ -49,19 +49,21 @@ public class Solver {
     MinPQ<Move> frontier = new MinPQ<>();
     frontier.insert(new Move(initial));
     Set<Board> explored = new HashSet<>();
+    int dupeCount = 0;
 
     while (!frontier.isEmpty()) {
       Move bestMove = frontier.delMin();
       if (explored.contains(bestMove.board)) {
-        System.out.println("dupe found" + explored.size());
+        dupeCount++;
       }
       explored.add(bestMove.board);
 
-
       if (bestMove.board.isGoal()) {
         lastMove = bestMove;
+//        System.out.println("dupe count: " + dupeCount);
         return;
       }
+
 
       for (Board neighbor : bestMove.board.neighbors()) {
         // neighbor not in frontier U explored
