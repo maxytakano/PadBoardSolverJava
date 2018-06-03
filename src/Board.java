@@ -29,7 +29,7 @@ public class Board {
     int block = startPosition[row][col];
     int targetBlock = targetPosition[row][col];
 
-    return !isSpace(block) && (block != targetBlock) && (targetBlock != 99);
+    return !isSpace(block) && (block != targetBlock);
   }
 
   /**
@@ -62,9 +62,9 @@ public class Board {
 //    System.out.println("calling equals in board");
 
     // 1. Check if its a Move object.
-    if (otherBoard.getClass() != this.getClass()){
-      return false;
-    }
+//    if (otherBoard.getClass() != this.getClass()){
+//      return false;
+//    }
 
     // 2. Check if we are comparing against our self.
     Board castedBoard = (Board) otherBoard;
@@ -79,11 +79,9 @@ public class Board {
     }
 
     // 4. Otherwise compare boards with the other move.
-
     for (int x = 0; x < startPosition.length; x++) {
       for (int y = 0; y < startPosition.length; y++) {
-        boolean condition1 = castedBoard.startPosition[x][y] != startPosition[x][y];
-        if (condition1 && targetPosition[x][y] != 99) {
+        if (castedBoard.startPosition[x][y] != startPosition[x][y]) {
           return false;
         }
       }
