@@ -3,25 +3,39 @@ import java.util.LinkedList;
 public class Board {
   private static final int SPACE = 0;
 
-  private int[][] startPosition;
-  private static int[][] targetPosition; // TODO: why does this have to be static to work...
-  private int size; // TODO: refactor m x n
+  private int s1, s2, s3, s4, s5, s6;
+  private static int t1, t2, t3, t4, t5, t6;
+  private int movePosition;
+  private static int width, height;
+  private static int size; // size is the length of a bitboard (width * height)
   private Integer hammingDistance;
   private Integer cachedHashCode;
 
   /************** Constructors **************/
 
   // Constructor used to setup initial board
-  public Board(int[][] startPosition, int[][] targetPosition) {
-    this.startPosition = copy2d(startPosition);
-    this.targetPosition = copy2d(targetPosition);
-    size = startPosition.length;
+  public Board(int[][] startPosition, int[][] targetPosition, int movePosition) {
+    width = startPosition.length;
+    height = startPosition[0].length;
+    this.movePosition = movePosition;
+    size = width * height;
+
   }
 
   // Internal use Constructor for board permutations only?
-  public Board(int[][] startPosition) {
-    this.startPosition = copy2d(startPosition);
-    size = startPosition.length;
+//  public Board(int[][] startPosition) {
+//    this.startPosition = copy2d(startPosition);
+//    size = startPosition.length;
+//  }
+
+  /************** Bitboard methods **************/
+
+  private arrayToBitboards(int[][] inputArray) {
+    String binary;
+    for (int i = 0; i < size; i++) {
+
+    }
+    binary = "0000000000000000000000000000000000000000000000000000000000000000";
   }
 
   /************** Helper methods **************/

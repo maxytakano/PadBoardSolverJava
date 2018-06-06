@@ -1,44 +1,37 @@
 import edu.princeton.cs.algs4.*;
-import java.util.Arrays;
 import java.io.File;
 
 public class TestClient {
   private static void solveBoard(File f) {
     // Create initial board from file
     In in = new In(f);
-    int size = in.readInt();
-    int[] startCounts = new int[20];
-//    int[] endCounts = new int[20];
-    int nextCell;
+
+    // Row major matrices
+    int rows = in.readInt();
+    int cols = in.readInt();
+    int movePosition = in.readInt();
 
     // Read starting board position
-    int[][] startPosition = new int[size][size];
-    for (int row = 0; row < size; row++) {
-      for (int col = 0; col < size; col++) {
-        nextCell = in.readInt();
-        startCounts[nextCell]++;
-        startPosition[row][col] = nextCell;
+    int[][] startPosition = new int[rows][cols];
+    for (int row = 0; row < rows; row++) { // Vertical
+      for (int col = 0; col < cols; col++) { // Horizontal
+        startPosition[row][col] = in.readInt();
       }
     }
 
     // Read end board position
-    int[][] endPosition = new int[size][size];
-    for (int row = 0; row < size; row++) {
-      for (int col = 0; col < size; col++) {
-        nextCell = in.readInt();
-//        endCounts[nextCell]++;
-        endPosition[row][col] = nextCell;
+    int[][] endPosition = new int[rows][cols];
+    for (int row = 0; row < rows; row++) {
+      for (int col = 0; col < cols; col++) {
+        endPosition[row][col] = in.readInt();
       }
     }
-
-//    boolean boardValid = Arrays.equals(startCounts, endCounts);
-//    System.out.println("Board valid: " + boardValid);
 
     long startTime = System.currentTimeMillis();
     System.out.println("Solving " + f.getName() + " . . .");
 
     // Create board with start and end positions
-    Board board = new Board(startPosition, endPosition);
+    Board board = new Board(startPosition, endPosition, movePosition);
 
     // Solve the board
     Solver solver = new Solver(board);
@@ -59,7 +52,7 @@ public class TestClient {
   }
 
   public static void main(String[] args) {
-    String target_dir = "./testPuzzles/solvable";
+    String target_dir = "./testPuzzles/newBoards";
     File dir = new File(target_dir);
     File[] files = dir.listFiles();
 
