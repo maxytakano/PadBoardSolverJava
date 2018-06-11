@@ -1,8 +1,7 @@
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Board {
-  private static final int SPACE = 0;
-
   // Bitboards representing the start/current position
   private long s0 = 0, s1 = 0, s2 = 0, s3 = 0, s4 = 0, s5 = 0;
   // Bitboards representing the target position
@@ -10,10 +9,10 @@ public class Board {
   private int movePosition;
   private static int width, height;
   private static int size; // size is the length of a bitboard (width * height)
-  private Integer hammingDistance;
-  private Integer cachedHashCode;
+  private final int HAMMING_INITIAL_VALUE = -999;
+  private int hammingDistance = HAMMING_INITIAL_VALUE; // initialize to -999 to show it's uninitialized
 
-  /************** Constructors **************/
+  /*----------- Constructors -----------*/
 
   // Constructor used to setup initial board
   public Board(int[][] startPosition, int[][] targetPosition, int movePosition) {
@@ -24,13 +23,18 @@ public class Board {
     arrayToBitboards(startPosition);
   }
 
-  // Internal use Constructor for board permutations only?
-//  public Board(int[][] startPosition) {
-//    this.startPosition = copy2d(startPosition);
-//    size = startPosition.length;
-//  }
+  // Internal use Constructor for board neighbor expansion
+  public Board(long s0, long s1, long s2, long s3, long s4, long s5, int movePosition) {
+    this.s0 = s0;
+    this.s1 = s1;
+    this.s2 = s2;
+    this.s3 = s3;
+    this.s4 = s4;
+    this.s5 = s5;
+    this.movePosition = movePosition;
+  }
 
-  /************** Bitboard methods **************/
+  /*----------- Bitboard methods -----------*/
 
   private void arrayToBitboards(int[][] inputArray) {
     long mask;
@@ -49,29 +53,20 @@ public class Board {
         case 3:
           s3 |= mask;
           break;
+        case 4:
+          s3 |= mask;
+          break;
+        case 5:
+          s3 |= mask;
+          break;
       }
     }
   }
 
-  /************** Helper methods **************/
+  /*----------- Core Overrides -----------*/
 
-  private boolean blockIsNotInPlace(int row, int col) {
-    int block = startPosition[row][col];
-    int targetBlock = targetPosition[row][col];
-
-    return !isSpace(block) && (block != targetBlock);
-  }
-
-  /**
-   * @return boolean - true if block == 0 (SPACE)
-   */
-  private boolean isSpace(int cell) {
-    return cell == SPACE;
-  }
-
-  public boolean isGoal() {
-    return (hammingDistance != null && hammingDistance == 0);
-  }
+  // These overrides allow a priority queue to optimize which board
+  // to explore next.
 
   /**
    * Calculates a unique hashcode to this board state.
@@ -79,12 +74,24 @@ public class Board {
    */
   @Override
   public int hashCode() {
-    if (cachedHashCode != null) {
-      return cachedHashCode;
-    }
+    // TODO: unclear if caching hashcode benefits performance
+//    if (cachedHashCode != null) {
+//      return cachedHashCode;
+//    }
+//
+//    cachedHashCode = java.util.Arrays.deepHashCode(startPosition);
+//    return cachedHashCode;
 
-    cachedHashCode = java.util.Arrays.deepHashCode(startPosition);
-    return cachedHashCode;
+    // Effective java recipe for hash codes.
+    int result = 42;
+    result = 31 * result + (int) s0;
+    result = 31 * result + (int) s1;
+    result = 31 * result + (int) s2;
+    result = 31 * result + (int) s3;
+    result = 31 * result + (int) s4;
+    result = 31 * result + (int) s5;
+    return result;
+
   }
 
   /**
@@ -93,72 +100,67 @@ public class Board {
    */
   @Override
   public boolean equals(Object otherBoard) {
-    if (hashCode() != otherBoard.hashCode()) {
-      return false;
-    }
+    // 1. Check if we are comparing against our self.
+    if (this == otherBoard) return true;
 
-//    System.out.println("calling equals in board");
+    // TODO: Unclear if this is actually a shortcut
+//    if (hashCode() != otherBoard.hashCode()) {
+//      return false;
+//    }
 
-    // 1. Check if its a Move object.
+    // Commented out for performance, means Object must be Board class or we crash.
+    // 2. Check if its a Board object.
 //    if (otherBoard.getClass() != this.getClass()){
 //      return false;
 //    }
 
-    // 2. Check if we are comparing against our self.
-    Board castedBoard = (Board) otherBoard;
-    if (this == castedBoard) {
-      return true;
-    }
-
     // 3. Check if invalid board comparison
-    if (castedBoard==null ||
-        castedBoard.startPosition.length != startPosition.length) {
-      return false;
-    }
+    // 3-1. Could compare board sizes here too, deferring for performance.
+//    if (castedBoard == null) {
+//      return false;
+//    }
 
-    // 4. Otherwise compare boards with the other move.
-    for (int x = 0; x < startPosition.length; x++) {
-      for (int y = 0; y < startPosition.length; y++) {
-        if (castedBoard.startPosition[x][y] != startPosition[x][y]) {
-          return false;
-        }
-      }
-    }
+    // 5. Otherwise XOR all bitboards to determine board equality.
+    Board castedBoard = (Board) otherBoard;
+    long result = (s0 ^ castedBoard.s0) | (s1 ^ castedBoard.s1) | (s2 ^ castedBoard.s2) |
+        (s3 ^ castedBoard.s3) | (s4 ^ castedBoard.s4) | (s5 ^ castedBoard.s5);
 
-    return true;
+    return result == 0;
   }
 
+  /*----------- Helper methods -----------*/
+
   /**
-   * TODO: adapt m x n
-   * Generates linked list of possible neighbors based on moving the SPACE up, down, left, or right.
+   * Generates linked list of possible neighbors based on moving up, down, left, or right.
    * @return LinkedList<Board> - linked list of neighbor board states
    */
   public Iterable<Board> neighbors() {
+    // TODO: Compare List/array/etc. performance.
     LinkedList<Board> neighbors = new LinkedList<>();
 
-    int[] spaceLocation = getSpaceLocation();
-    int spaceX = spaceLocation[0];
-    int spaceY = spaceLocation[1];
+    int moveRow = movePosition / height;
+    int moveCol = movePosition % width;
 
-    // Check if left of space is on board.
-    if (spaceX > 0) {
+
+    // Check if we can move left.
+    if (moveCol > 0) {
       Board shiftLeft = swapCells(spaceX, spaceY, spaceX - 1, spaceY);
       neighbors.add(shiftLeft);
     }
-    // Right of space.
-    if (spaceX < size - 1) {
+    // Right
+    if (moveCol < width - 1) {
       Board shiftRight = swapCells(spaceX, spaceY, spaceX + 1, spaceY);
       neighbors.add(shiftRight);
     }
-    // Below the space.
-    if (spaceY > 0) {
-      Board shiftDown = swapCells(spaceX, spaceY, spaceX, spaceY - 1);
-      neighbors.add(shiftDown);
-    }
-    // Above the space.
-    if (spaceY < size - 1) {
+    // Up
+    if (moveRow < height - 1) {
       Board shiftUp = swapCells(spaceX, spaceY, spaceX, spaceY + 1);
       neighbors.add(shiftUp);
+    }
+    // Down
+    if (moveRow > 0) {
+      Board shiftDown = swapCells(spaceX, spaceY, spaceX, spaceY - 1);
+      neighbors.add(shiftDown);
     }
 
     return neighbors;
@@ -176,6 +178,21 @@ public class Board {
 
     return new Board(copy);
   }
+
+  public boolean isGoal() {
+    return (hammingDistance == 0);
+  }
+
+  private boolean blockIsNotInPlace(int row, int col) {
+    int block = startPosition[row][col];
+    int targetBlock = targetPosition[row][col];
+
+    return !isSpace(block) && (block != targetBlock);
+  }
+
+
+
+
 
   /**
    * TODO: adapt m x n
@@ -249,7 +266,7 @@ public class Board {
 
   // TODO: refactor m x n
   public int hamming() {
-    if (hammingDistance != null) {
+    if (hammingDistance != HAMMING_INITIAL_VALUE) {
       return hammingDistance;
     }
 
@@ -258,7 +275,7 @@ public class Board {
       for (int y = 0; y < startPosition.length; y++)
         if (blockIsNotInPlace(x, y)) count++;
 
-    hammingDistance = new Integer(count);
+    hammingDistance = count;
 
     return hammingDistance;
   }
