@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Board {
@@ -20,7 +19,8 @@ public class Board {
     height = startPosition[0].length;
     this.movePosition = movePosition;
     size = width * height;
-    arrayToBitboards(startPosition);
+    arrayToBitboards(startPosition, s0, s1, s2, s3, s4, s5);
+    arrayToBitboards(targetPosition, t0, t1, t2, t3, t4, t5);
   }
 
   // Internal use Constructor for board neighbor expansion
@@ -36,28 +36,28 @@ public class Board {
 
   /*----------- Bitboard methods -----------*/
 
-  private void arrayToBitboards(int[][] inputArray) {
+  private void arrayToBitboards(int[][] inputArray, long x0, long x1, long x2, long x3, long x4, long x5) {
     long mask;
     for (int i = 0; i < size; i++) {
       mask = 1 << i;
       switch(inputArray[i/height][i%width]) {
         case 0:
-          s0 |= mask;
+          x0 |= mask;
           break;
         case 1:
-          s1 |= mask;
+          x1 |= mask;
           break;
         case 2:
-          s2 |= mask;
+          x2 |= mask;
           break;
         case 3:
-          s3 |= mask;
+          x3 |= mask;
           break;
         case 4:
-          s3 |= mask;
+          x4 |= mask;
           break;
         case 5:
-          s3 |= mask;
+          x5 |= mask;
           break;
       }
     }
@@ -128,7 +128,33 @@ public class Board {
     return result == 0;
   }
 
-  /*----------- Helper methods -----------*/
+  /**
+   * Returns board string.
+   * @return String - stringified board
+   */
+  @Override
+  public String toString() {
+    StringBuilder str = new StringBuilder();
+    str.append("~~~~~~~~~~" + "\n");
+
+    String buffer = "";
+    for (int i = 0; i < size; i++) {
+      if (i == movePosition) buffer += "|";
+      if (((s0>>i) & 1) == 1) buffer = String.format("%2d", 0);
+      if (((s1>>i) & 1) == 1) buffer = String.format("%2d", 1);
+      if (((s2>>i) & 1) == 1) buffer = String.format("%2d", 2);
+      if (((s3>>i) & 1) == 1) buffer = String.format("%2d", 3);
+      if (((s4>>i) & 1) == 1) buffer = String.format("%2d", 4);
+      if (((s5>>i) & 1) == 1) buffer = String.format("%2d", 5);
+      if (i == movePosition) buffer += "|";
+      if (i % width == 0) buffer += "\n";
+      str.append(buffer);
+    }
+
+    return str.toString();
+  }
+
+  /*----------- Board interface -----------*/
 
   /**
    * Generates linked list of possible neighbors based on moving up, down, left, or right.
@@ -144,171 +170,126 @@ public class Board {
 
     // Check if we can move left.
     if (moveCol > 0) {
-      Board shiftLeft = swapCells(spaceX, spaceY, spaceX - 1, spaceY);
+      Board shiftLeft = swapCells(movePosition, movePosition - 1);
       neighbors.add(shiftLeft);
     }
     // Right
     if (moveCol < width - 1) {
-      Board shiftRight = swapCells(spaceX, spaceY, spaceX + 1, spaceY);
+      Board shiftRight = swapCells(movePosition, movePosition + 1);
       neighbors.add(shiftRight);
     }
     // Up
-    if (moveRow < height - 1) {
-      Board shiftUp = swapCells(spaceX, spaceY, spaceX, spaceY + 1);
+    if (moveRow > 0) {
+      Board shiftUp = swapCells(movePosition, movePosition - width);
       neighbors.add(shiftUp);
     }
     // Down
-    if (moveRow > 0) {
-      Board shiftDown = swapCells(spaceX, spaceY, spaceX, spaceY - 1);
+    if (moveRow < height - 1) {
+      Board shiftDown = swapCells(movePosition, movePosition + width);
       neighbors.add(shiftDown);
     }
 
     return neighbors;
   }
 
-  /**
-   * Takes two cell positions from startPosition and swaps them.
-   * @return Board - board with the cell position swapped
-   */
-  private Board swapCells(int x1, int y1, int x2, int y2) {
-    int[][] copy = copy2d(startPosition);
-    int tmp = copy[x1][y1];
-    copy[x1][y1] = copy[x2][y2];
-    copy[x2][y2] = tmp;
-
-    return new Board(copy);
-  }
-
   public boolean isGoal() {
     return (hammingDistance == 0);
   }
 
-  private boolean blockIsNotInPlace(int row, int col) {
-    int block = startPosition[row][col];
-    int targetBlock = targetPosition[row][col];
 
-    return !isSpace(block) && (block != targetBlock);
-  }
-
-
-
-
-
-  /**
-   * TODO: adapt m x n
-   * TODO: refactor to support moving without a space cell
-   * Finds where the space is ('0') on the board.
-   * @return Tuple[x][y] - Space's location
-   */
-  private int[] getSpaceLocation() {
-    for (int x = 0; x < startPosition.length; x++) {
-      for (int y = 0; y < startPosition.length; y++) {
-        if (isSpace(startPosition[x][y])) {
-          int[] location = new int[2];
-          location[0] = x;
-          location[1] = y;
-          return location;
-        }
-      }
-    }
-
-    throw new RuntimeException();
-  }
-
-  /**
-   * TODO: adapt m x n
-   * Returns board string for pretty print.
-   * @return String - stringified board
-   */
-  public String toString() {
-    StringBuilder str = new StringBuilder();
-    str.append(size + "\n");
-    for (int row = 0; row < startPosition.length; row++) {
-      for (int col = 0; col < startPosition.length; col++) {
-        str.append(String.format("%2d ", startPosition[row][col]));
-      }
-      str.append("\n");
-    }
-
-    return str.toString();
-  }
-
-  /**
-   * TODO: adapt m x n
-   * Copies passed in matrix.
-   * @return Array[][] - new copied matrix.
-   */
-  private int[][] copy2d(int[][] matrix) {
-    int[][] copy = new int[matrix.length][];
-    for (int x = 0; x < matrix.length; x++) {
-      int[] aMatrix = matrix[x];
-      int   aLength = aMatrix.length;
-      copy[x] = new int[aLength];
-      System.arraycopy(aMatrix, 0, copy[x], 0, aLength);
-    }
-
-    return copy;
-  }
-
-  // ?? bugged?
-//  private boolean blockIsInPlace(int row, int col) {
-//    int block = startPosition[row][col];
-//    int targetBlock = targetPosition[row][col];
-//
-//    return !isSpace(block) && block != goalFor(row, col);
-//  }
-//
-//  private int goalFor(int row, int col) {
-//    return row*size + col + 1;
-//  }
-
-  /************** Board solve algorithm methods **************/
+  /*----------- Solver interface -----------*/
 
   // TODO: refactor m x n
   public int hamming() {
+    // Return cached hamming if not equal to HAMMING_INITIAL_VALUE (-999)
     if (hammingDistance != HAMMING_INITIAL_VALUE) {
       return hammingDistance;
     }
 
-    int count = 0;
-    for (int x = 0; x < startPosition.length; x++)
-      for (int y = 0; y < startPosition.length; y++)
-        if (blockIsNotInPlace(x, y)) count++;
+    int distance = 0;
+    long xor0 = s0 ^ t0;
+    long xor1 = s1 ^ t1;
+    long xor2 = s2 ^ t2;
+    long xor3 = s3 ^ t3;
+    long xor4 = s4 ^ t4;
+    long xor5 = s5 ^ t5;
+    distance += countSetBits(xor0);
+    distance += countSetBits(xor1);
+    distance += countSetBits(xor2);
+    distance += countSetBits(xor3);
+    distance += countSetBits(xor4);
+    distance += countSetBits(xor5);
 
-    hammingDistance = count;
+    // Cache the hamming distance
+    // Divide by 2 since setBits doubles distance
+    hammingDistance = distance / 2;
 
     return hammingDistance;
   }
 
-// TODO: refactor m x n
+  // TODO: refactor m x n
 // TODO: (doesnt work currently)
-  public int manhattan() {
-    int sum = 0;
-    for (int x = 0; x < startPosition.length; x++)
-      for (int y = 0; y < startPosition.length; y++)
-        sum += calculateDistances(x, y);
+//  public int manhattan() {
+//    int sum = 0;
+//    for (int x = 0; x < startPosition.length; x++)
+//      for (int y = 0; y < startPosition.length; y++)
+//        sum += calculateDistances(x, y);
+//
+//    return sum;
+//  }
 
-    return sum;
-  }
+  /*----------- private Board helpers -----------*/
 
-  private int calculateDistances(int x, int y) {
-    int cell = startPosition[x][y];
-
-    return (isSpace(cell)) ? 0 : Math.abs(x - getRow(cell)) + Math.abs(y - col(cell));
+  /**
+   * Takes two cell positions from startPosition and swaps them.
+   * @return Board - board with the cell position swapped
+   */
+  private Board swapCells(int p1, int p2) {
+    long new0 = bitSwap(s0, p1, p2);
+    long new1 = bitSwap(s1, p1, p2);
+    long new2 = bitSwap(s2, p1, p2);
+    long new3 = bitSwap(s3, p1, p2);
+    long new4 = bitSwap(s4, p1, p2);
+    long new5 = bitSwap(s5, p1, p2);
+    // p2 is the new move position as it's where we are swapping to
+    return new Board(new0, new1, new2, new3, new4, new5, p2);
   }
 
   /**
-   * @return which row the given cell is on.
+   * Counts number of 1 bits for a given long
+   * @return int - number of bits set for the long
    */
-  private int getRow (int cell) {
-    return (cell - 1) / size;
+  private int countSetBits(long n)
+  {
+    int count = 0;
+    while (n != 0) {
+      count += n & 1;
+      n >>= 1;
+    }
+    return count;
   }
 
   /**
-   * @return which col the given cell is on.
+   * Swaps two bits in a long given their positions p1, p2
+   * @return long - long with it's p1, p2 bits swapped
    */
-  private int col (int cell) {
-    return (cell - 1) % size;
+  private long bitSwap(long i, int p1, int p2) {
+
+    long bit1 = (i >> p1) & 1;// bit at p1
+    long bit2 = (i >> p2) & 1;// bit at p2
+
+    // bits same return original
+    if (bit1 == bit2) return i;
+
+    // bits different, swap with mask xor
+    int mask = (1 << p1) | (1 << p2);
+
+    return i ^ mask;
   }
+
+  // used for manhattan possibly
+//  private int calculateDistances(int x, int y) {
+//    return 0;
+//  }
 
 }

@@ -43,9 +43,9 @@ public class TestClient {
       StdOut.println("Time taken: " + duration);
 
       // print the board out.
-//      for (Board b : solver.solution()) {
-//        StdOut.println(b);
-//      }
+      for (Board b : solver.solution()) {
+        StdOut.println(b);
+      }
     } else {
       StdOut.println("No solution possible");
     }
