@@ -15,12 +15,12 @@ public class Board {
 
   // Constructor used to setup initial board
   public Board(int[][] startPosition, int[][] targetPosition, int movePosition) {
-    width = startPosition.length;
-    height = startPosition[0].length;
+    height = startPosition.length;
+    width = startPosition[0].length;
     this.movePosition = movePosition;
     size = width * height;
-    arrayToBitboards(startPosition, s0, s1, s2, s3, s4, s5);
-    arrayToBitboards(targetPosition, t0, t1, t2, t3, t4, t5);
+    startToBitboard(startPosition);
+    targetToBitboard(targetPosition);
   }
 
   // Internal use Constructor for board neighbor expansion
@@ -36,28 +36,66 @@ public class Board {
 
   /*----------- Bitboard methods -----------*/
 
-  private void arrayToBitboards(int[][] inputArray, long x0, long x1, long x2, long x3, long x4, long x5) {
+  /**
+   * Sets up the start position bit boards using the startPosition Array.
+   * Java does not support passing by reference and we are using ints for performance
+   * instead of arrays, so we need a start and target function.
+   */
+  private void startToBitboard(int[][] inputArray) {
     long mask;
+    int row, col;
     for (int i = 0; i < size; i++) {
       mask = 1 << i;
-      switch(inputArray[i/height][i%width]) {
+      row = i / width;
+      col = i % width;
+      switch(inputArray[row][col]) {
         case 0:
-          x0 |= mask;
+          s0 |= mask;
           break;
         case 1:
-          x1 |= mask;
+          s1 |= mask;
           break;
         case 2:
-          x2 |= mask;
+          s2 |= mask;
           break;
         case 3:
-          x3 |= mask;
+          s3 |= mask;
           break;
         case 4:
-          x4 |= mask;
+          s4 |= mask;
           break;
         case 5:
-          x5 |= mask;
+          s5 |= mask;
+          break;
+      }
+    }
+  }
+
+  private void targetToBitboard(int[][] inputArray) {
+    long mask;
+    int row, col;
+    for (int i = 0; i < size; i++) {
+      mask = 1 << i;
+      row = i / width;
+      col = i % width;
+      switch(inputArray[row][col]) {
+        case 0:
+          t0 |= mask;
+          break;
+        case 1:
+          t1 |= mask;
+          break;
+        case 2:
+          t2 |= mask;
+          break;
+        case 3:
+          t3 |= mask;
+          break;
+        case 4:
+          t4 |= mask;
+          break;
+        case 5:
+          t5 |= mask;
           break;
       }
     }
@@ -137,17 +175,21 @@ public class Board {
     StringBuilder str = new StringBuilder();
     str.append("~~~~~~~~~~" + "\n");
 
-    String buffer = "";
+    String buffer;
     for (int i = 0; i < size; i++) {
-      if (i == movePosition) buffer += "|";
-      if (((s0>>i) & 1) == 1) buffer = String.format("%2d", 0);
-      if (((s1>>i) & 1) == 1) buffer = String.format("%2d", 1);
-      if (((s2>>i) & 1) == 1) buffer = String.format("%2d", 2);
-      if (((s3>>i) & 1) == 1) buffer = String.format("%2d", 3);
-      if (((s4>>i) & 1) == 1) buffer = String.format("%2d", 4);
-      if (((s5>>i) & 1) == 1) buffer = String.format("%2d", 5);
-      if (i == movePosition) buffer += "|";
-      if (i % width == 0) buffer += "\n";
+      buffer = "";
+      if (((s0>>i) & 1) == 1) buffer += String.format("%d", 0);
+      if (((s1>>i) & 1) == 1) buffer += String.format("%d", 1);
+      if (((s2>>i) & 1) == 1) buffer += String.format("%d", 2);
+      if (((s3>>i) & 1) == 1) buffer += String.format("%d", 3);
+      if (((s4>>i) & 1) == 1) buffer += String.format("%d", 4);
+      if (((s5>>i) & 1) == 1) buffer += String.format("%d", 5);
+      if (i == movePosition) {
+        buffer += ")";
+      } else {
+        buffer += " ";
+      }
+      if (i > 0 && (i + 1) % width == 0) buffer += "\n";
       str.append(buffer);
     }
 
@@ -158,15 +200,14 @@ public class Board {
 
   /**
    * Generates linked list of possible neighbors based on moving up, down, left, or right.
-   * @return LinkedList<Board> - linked list of neighbor board states
+   * @return LinkedList<Board> - linked list of neighbor board states (order L, R, U D)
    */
   public Iterable<Board> neighbors() {
     // TODO: Compare List/array/etc. performance.
     LinkedList<Board> neighbors = new LinkedList<>();
 
-    int moveRow = movePosition / height;
+    int moveRow = movePosition / width;
     int moveCol = movePosition % width;
-
 
     // Check if we can move left.
     if (moveCol > 0) {
@@ -193,6 +234,9 @@ public class Board {
   }
 
   public boolean isGoal() {
+    if (hammingDistance != HAMMING_INITIAL_VALUE) {
+      return hamming() == 0;
+    }
     return (hammingDistance == 0);
   }
 
@@ -213,6 +257,7 @@ public class Board {
     long xor3 = s3 ^ t3;
     long xor4 = s4 ^ t4;
     long xor5 = s5 ^ t5;
+
     distance += countSetBits(xor0);
     distance += countSetBits(xor1);
     distance += countSetBits(xor2);
