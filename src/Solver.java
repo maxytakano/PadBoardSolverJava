@@ -35,7 +35,7 @@ public class Solver {
         // neighbor not in frontier U explored
         boolean criticalCheck = (bestMove.previous == null || !neighbor.equals(bestMove.previous.board));
 
-        // TODO: memory optimization is SLOW can this be sped up?
+        // TODO: (!isBoardInPQ(frontier, neighbor) is SLOW can this be sped up?
 //        boolean memoryOptimization = (!isBoardInPQ(frontier, neighbor) && !explored.contains(neighbor));
         boolean memoryOptimization = !explored.contains(neighbor);
 

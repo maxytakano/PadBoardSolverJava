@@ -51,7 +51,7 @@ public class TestClient {
   }
 
   public static void main(String[] args) {
-    String target_dir = "./testPuzzles/newBoards";
+    String target_dir = "./testPuzzles/other";
     File dir = new File(target_dir);
     File[] files = dir.listFiles();
 

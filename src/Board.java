@@ -95,6 +95,7 @@ public class Board {
     result = 31 * result + (int) bb3;
     result = 31 * result + (int) bb4;
     result = 31 * result + (int) bb5;
+    result = 31 * result + movePosition;
     return result;
 
   }
@@ -130,7 +131,7 @@ public class Board {
     long result = (bb0 ^ castedBoard.bb0) | (bb1 ^ castedBoard.bb1) | (bb2 ^ castedBoard.bb2) |
         (bb3 ^ castedBoard.bb3) | (bb4 ^ castedBoard.bb4) | (bb5 ^ castedBoard.bb5);
 
-    return (result == 0);
+    return (result == 0 && movePosition == castedBoard.movePosition);
   }
 
   /**
