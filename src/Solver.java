@@ -5,6 +5,50 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Solver {
+  Board targetPosition;
+
+  public Solver(Board startPosition, Board targetPosition) {
+    this.targetPosition = targetPosition;
+    this.solveBoard(startPosition);
+  }
+
+  private void solveBoard(Board startPosition) {
+    MinPQ<Move> frontier = new MinPQ<>();
+    frontier.insert(new Move(startPosition));
+    Set<Board> explored = new HashSet<>();
+    int dupeCount = 0;
+
+    while (!frontier.isEmpty()) {
+      Move bestMove = frontier.delMin();
+      if (explored.contains(bestMove.board)) {
+        dupeCount++;
+      }
+      explored.add(bestMove.board);
+
+      if (bestMove.board.isGoal(targetPosition)) {
+        lastMove = bestMove;
+        System.out.println("dupe count: " + dupeCount);
+        return;
+      }
+
+      for (Board neighbor : bestMove.board.neighbors()) {
+        // neighbor not in frontier U explored
+        boolean criticalCheck = (bestMove.previous == null || !neighbor.equals(bestMove.previous.board));
+
+        // TODO: memory optimization is SLOW can this be sped up?
+//        boolean memoryOptimization = (!isBoardInPQ(frontier, neighbor) && !explored.contains(neighbor));
+        boolean memoryOptimization = !explored.contains(neighbor);
+
+        boolean finalCheck = criticalCheck && memoryOptimization;
+//        boolean finalCheck = memoryOptimization;
+
+        if (finalCheck) {
+          frontier.insert(new Move(neighbor, bestMove));
+        }
+      }
+    }
+  }
+
   private class Move implements Comparable<Move> {
     private Move previous;
     private Board board;
@@ -25,13 +69,14 @@ public class Solver {
     @Override
     public int compareTo(Move move) {
 //      return (this.board.manhattan() - move.board.manhattan()) + (this.numMoves - move.numMoves);
-      return (this.board.hamming() - move.board.hamming()) + (this.numMoves - move.numMoves);
+      return (this.board.hamming(targetPosition) - move.board.hamming(targetPosition)) + (this.numMoves - move.numMoves);
     }
   }
 
   // Final move needed for the goal, assigned when the goal is reached.
   private Move lastMove;
 
+  // Used for optimization, seems slow currently
   private boolean isBoardInPQ(MinPQ<Move> pq, Board board) {
     for (Move pqMove : pq) {
       if (pqMove.board == board) {
@@ -39,48 +84,6 @@ public class Solver {
       }
     }
     return false;
-  }
-
-  /**
-   *
-   * @param initial
-   */
-  public Solver(Board initial) {
-    MinPQ<Move> frontier = new MinPQ<>();
-    frontier.insert(new Move(initial));
-    Set<Board> explored = new HashSet<>();
-    int dupeCount = 0;
-
-    while (!frontier.isEmpty()) {
-      Move bestMove = frontier.delMin();
-      if (explored.contains(bestMove.board)) {
-        dupeCount++;
-      }
-      explored.add(bestMove.board);
-
-      if (bestMove.board.isGoal()) {
-        lastMove = bestMove;
-//        System.out.println("dupe count: " + dupeCount);
-        return;
-      }
-
-
-      for (Board neighbor : bestMove.board.neighbors()) {
-        // neighbor not in frontier U explored
-        boolean criticalCheck = (bestMove.previous == null || !neighbor.equals(bestMove.previous.board));
-
-        // TODO: memory optimization is SLOW can this be sped up?
-//        boolean memoryOptimization = (!isBoardInPQ(frontier, neighbor) && !explored.contains(neighbor));
-        boolean memoryOptimization = !explored.contains(neighbor);
-
-        boolean finalCheck = criticalCheck && memoryOptimization;
-//        boolean finalCheck = memoryOptimization;
-
-        if (finalCheck) {
-          frontier.insert(new Move(neighbor, bestMove));
-        }
-      }
-    }
   }
 
   /**

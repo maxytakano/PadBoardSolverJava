@@ -20,21 +20,20 @@ public class TestClient {
     }
 
     // Read end board position
-    int[][] endPosition = new int[rows][cols];
+    int[][] targetPosition = new int[rows][cols];
     for (int row = 0; row < rows; row++) {
       for (int col = 0; col < cols; col++) {
-        endPosition[row][col] = in.readInt();
+        targetPosition[row][col] = in.readInt();
       }
     }
 
     long startTime = System.currentTimeMillis();
     System.out.println("Solving " + f.getName() + " . . .");
 
-    // Create board with start and end positions
-    Board board = new Board(startPosition, endPosition, movePosition);
+    Board startBoard = new Board(startPosition, movePosition);
+    Board targetBoard = new Board(targetPosition, movePosition);
 
-    // Solve the board
-    Solver solver = new Solver(board);
+    Solver solver = new Solver(startBoard, targetBoard);
 
     if (solver.isSolvable()) {
       long endTime = System.currentTimeMillis();

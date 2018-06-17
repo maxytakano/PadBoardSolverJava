@@ -10,6 +10,7 @@ public class BoardTest {
   int[][] target1, target2;
   int[][] offSize1, offSize2, offSize3;
   int[][] big1, big1a, big2, big3;
+  int[][] medium4x4s, medium4x4t;
 
   @Before
   public void init() {
@@ -118,29 +119,47 @@ public class BoardTest {
         {0, 0, 0, 0, 0},
     };
 
-//    s0 = 0b111;
+    medium4x4s = new int[][] {
+        {0, 1, 1, 2},
+        {1, 0, 0, 2},
+        {3, 3, 3, 2},
+        {0, 0, 0, 3},
+    };
+    medium4x4t = new int[][] {
+        {0, 0, 0, 2},
+        {1, 1, 1, 3},
+        {3, 2, 2, 3},
+        {0, 0, 0, 3},
+    };
+  }
+
+  @org.junit.Test
+  public void medium4x4test() {
+    Board start = new Board(medium4x4s, 0);
+    Board target = new Board(medium4x4t, 0);
+
   }
 
   @org.junit.Test
   public void hashCodeTest() {
-    Board bstart1 = new Board(start1, target1, 0);
-    Board bstart2 = new Board(start2, target1, 0);
+    Board bstart1 = new Board(start1, 0);
+    Board bstart2 = new Board(start2, 0);
     assertTrue(bstart1.equals(bstart2) && bstart2.equals(bstart1));
     assertTrue(bstart1.hashCode() == bstart2.hashCode());
   }
 
   @org.junit.Test
   public void equals() {
-    Board bstart1 = new Board(start1, target1, 0);
-    Board btarget1 = new Board(target1, start1, 0);
-    Board bstart2 = new Board(start2, start1, 0);
-    Board boffSize1 = new Board(offSize1, offSize1, 0);
-    Board boffSize2 = new Board(offSize2, offSize2, 0);
-    Board boffSize3 = new Board(offSize3, offSize3, 0);
-    Board bbig1 = new Board(big1, big2, 0);
-    Board bbig1a = new Board(big1a, big1, 0);
-    Board bbig2 = new Board(big2, big2, 6);
-    Board bbig3 = new Board(big3, big1, 0);
+    Board bstart1 = new Board(start1, 0);
+    Board btarget1 = new Board(target1, 0);
+    Board bstart2 = new Board(start2, 0);
+    Board boffSize1 = new Board(offSize1, 0);
+    Board boffSize2 = new Board(offSize2, 0);
+    Board boffSize3 = new Board(offSize3, 0);
+    Board bbig1 = new Board(big1, 0);
+    Board bbig1a = new Board(big1a, 0);
+    Board bbig2 = new Board(big2, 6);
+    Board bbig3 = new Board(big3, 0);
 
 
     assertNotEquals(bstart1, btarget1);
@@ -161,17 +180,17 @@ public class BoardTest {
 
   @org.junit.Test
   public void neighbors() {
-    Board bstart1 = new Board(start1, start2, 4);
-    Board bstart2 = new Board(start1, start2, 0);
-    Board bstart3 = new Board(start1, start2, 8);
-    Board bnL = new Board(nL, start2, 0);
-    Board bnR = new Board(nR, start2, 0);
-    Board bnU = new Board(nU, start2, 0);
-    Board bnD = new Board(nD, start2, 0);
-    Board bn2R = new Board(n2R, start2, 0);
-    Board bn2D = new Board(n2D, start2, 0);
-    Board bn3L = new Board(n3L, start2, 0);
-    Board bn3U = new Board(n3U, start2, 0);
+    Board bstart1 = new Board(start1, 4);
+    Board bstart2 = new Board(start1, 0);
+    Board bstart3 = new Board(start1, 8);
+    Board bnL = new Board(nL, 0);
+    Board bnR = new Board(nR, 0);
+    Board bnU = new Board(nU, 0);
+    Board bnD = new Board(nD, 0);
+    Board bn2R = new Board(n2R, 0);
+    Board bn2D = new Board(n2D, 0);
+    Board bn3L = new Board(n3L, 0);
+    Board bn3U = new Board(n3U, 0);
     Board[] neighborSet1 = {bnL, bnR, bnU, bnD};
     Board[] neighborSet2 = {bn2R, bn2D};
     Board[] neighborSet3 = {bn3L, bn3U};
@@ -201,39 +220,44 @@ public class BoardTest {
 
   @org.junit.Test
   public void isGoal() {
-    Board bstart1 = new Board(start1, start2, 0);
-    Board bbig1 = new Board(big1, big1a, 0);
-    Board btarget2 = new Board(start1, target2, 0);
-    assertTrue(bstart1.isGoal());
-    assertTrue(bbig1.isGoal());
-    assertFalse(btarget2.isGoal());
+    Board bstart1 = new Board(start1, 0);
+    Board bstart2 = new Board(start2, 0);
+
+    Board bbig1 = new Board(big1, 0);
+    Board bbig1a = new Board(big1a, 0);
+    Board btarget2 = new Board(target2, 0);
+
+    assertTrue(bstart1.isGoal(bstart2));
+    assertTrue(bbig1.isGoal(bbig1a));
+    assertFalse(btarget2.isGoal(bstart1));
   }
 
   @org.junit.Test
   public void hamming() {
-    Board bstart1 = new Board(start1, start2, 0);
+    Board bstart1 = new Board(start1, 0);
+    Board target1 = new Board(start2, 0);
     long s0 = 0b111;
     long s1 = 0b111000;
     long s2 = 0b111000000;
     long tx = 0b0;
 
     Board bstart2 = new Board(s0, s1, s2, tx, tx, tx, 0);
-    assertEquals(0, bstart1.hamming());
-    assertEquals(0, bstart2.hamming());
+    assertEquals(0, bstart1.hamming(target1));
+    assertEquals(0, bstart2.hamming(target1));
 
     long c0 = 0b111000000;
     long c1 = 0b111;
     long c2 = 0b111000;
 
     Board bstart3 = new Board(c0, c1, c2, tx, tx, tx, 0);
-    assertEquals(9, bstart3.hamming());
+    assertEquals(9, bstart3.hamming(target1));
 
     long d0 = 0b111000;
     long d1 = 0b111;
     long d2 = 0b111000000;
 
     Board bstart4 = new Board(d0, d1, d2, tx, tx, tx, 0);
-    assertEquals(6, bstart4.hamming());
+    assertEquals(6, bstart4.hamming(target1));
 
   }
 }
