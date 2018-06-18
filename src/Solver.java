@@ -20,6 +20,7 @@ public class Solver {
 
     while (!frontier.isEmpty()) {
       Move bestMove = frontier.delMin();
+      System.out.println(frontier.size());
       if (explored.contains(bestMove.board)) {
         dupeCount++;
       }
