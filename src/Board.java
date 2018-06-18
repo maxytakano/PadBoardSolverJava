@@ -2,7 +2,7 @@ import java.util.LinkedList;
 
 public class Board {
   // Bitboards representing the start/current position
-  public long bb0 = 0, bb1 = 0, bb2 = 0, bb3 = 0, bb4 = 0, bb5 = 0;
+  public long bb0 = 0, bb1 = 0, bb2 = 0, bb3 = 0, bb4 = 0, bb5 = 0, bb6 = 0, bb7 = 0;
   private int movePosition;
   private static int width, height;
   private static int size; // size is the length of a bitboard (width * height)
@@ -21,13 +21,15 @@ public class Board {
   }
 
   // Search expansion ctor built with N bitboards
-  public Board(long bb0, long bb1, long bb2, long bb3, long bb4, long bb5, int movePosition) {
+  public Board(long bb0, long bb1, long bb2, long bb3, long bb4, long bb5, long bb6, long bb7, int movePosition) {
     this.bb0 = bb0;
     this.bb1 = bb1;
     this.bb2 = bb2;
     this.bb3 = bb3;
     this.bb4 = bb4;
     this.bb5 = bb5;
+    this.bb5 = bb6;
+    this.bb5 = bb7;
     this.movePosition = movePosition;
   }
 
@@ -64,6 +66,12 @@ public class Board {
         case 5:
           bb5 |= mask;
           break;
+        case 6:
+          bb6 |= mask;
+          break;
+        case 7:
+          bb7 |= mask;
+          break;
       }
     }
   }
@@ -95,6 +103,8 @@ public class Board {
     result = 31 * result + (int) bb3;
     result = 31 * result + (int) bb4;
     result = 31 * result + (int) bb5;
+    result = 31 * result + (int) bb6;
+    result = 31 * result + (int) bb7;
     result = 31 * result + movePosition;
     return result;
 
@@ -129,7 +139,8 @@ public class Board {
     // 5. Otherwise XOR all bitboards to determine board equality.
     Board castedBoard = (Board) otherBoard;
     long result = (bb0 ^ castedBoard.bb0) | (bb1 ^ castedBoard.bb1) | (bb2 ^ castedBoard.bb2) |
-        (bb3 ^ castedBoard.bb3) | (bb4 ^ castedBoard.bb4) | (bb5 ^ castedBoard.bb5);
+      (bb3 ^ castedBoard.bb3) | (bb4 ^ castedBoard.bb4) | (bb5 ^ castedBoard.bb5) |
+      (bb6 ^ castedBoard.bb6) | (bb7 ^ castedBoard.bb7);
 
     return (result == 0 && movePosition == castedBoard.movePosition);
   }
@@ -152,6 +163,8 @@ public class Board {
       if (((bb3 >> i) & 1) == 1) buffer += String.format("%d", 3);
       if (((bb4 >> i) & 1) == 1) buffer += String.format("%d", 4);
       if (((bb5 >> i) & 1) == 1) buffer += String.format("%d", 5);
+      if (((bb6 >> i) & 1) == 1) buffer += String.format("%d", 6);
+      if (((bb7 >> i) & 1) == 1) buffer += String.format("%d", 7);
       if (i == movePosition) {
         buffer += ")";
       } else {
@@ -227,6 +240,8 @@ public class Board {
     long xor3 = bb3 ^ otherBoard.bb3;
     long xor4 = bb4 ^ otherBoard.bb4;
     long xor5 = bb5 ^ otherBoard.bb5;
+    long xor6 = bb6 ^ otherBoard.bb6;
+    long xor7 = bb7 ^ otherBoard.bb7;
 
     distance += countSetBits(xor0);
     distance += countSetBits(xor1);
@@ -234,6 +249,8 @@ public class Board {
     distance += countSetBits(xor3);
     distance += countSetBits(xor4);
     distance += countSetBits(xor5);
+    distance += countSetBits(xor6);
+    distance += countSetBits(xor7);
 
     // Cache the hamming distance
     // Divide by 2 since setBits doubles distance
@@ -266,8 +283,10 @@ public class Board {
     long new3 = bitSwap(bb3, p1, p2);
     long new4 = bitSwap(bb4, p1, p2);
     long new5 = bitSwap(bb5, p1, p2);
+    long new6 = bitSwap(bb6, p1, p2);
+    long new7 = bitSwap(bb7, p1, p2);
     // p2 is the new move position as it's where we are swapping to
-    return new Board(new0, new1, new2, new3, new4, new5, p2);
+    return new Board(new0, new1, new2, new3, new4, new5, new6, new7, p2);
   }
 
   /**

@@ -11,9 +11,45 @@ public class BoardTest {
   int[][] offSize1, offSize2, offSize3;
   int[][] big1, big1a, big2, big3;
   int[][] medium4x4s, medium4x4t;
+  int[][] hStart, h1, h2, h3, h4, hTarget;
 
   @Before
   public void init() {
+    hStart = new int[][] {
+        {0, 1, 2, 3, 4, 5},
+        {0, 1, 2, 3, 4, 5},
+        {0, 1, 2, 3, 4, 5},
+        {0, 1, 2, 3, 4, 5},
+        {0, 1, 2, 3, 4, 5},
+    };
+    hTarget = new int[][] {
+        {1, 2, 3, 4, 5, 0},
+        {0, 1, 2, 3, 4, 5},
+        {0, 1, 2, 3, 4, 5},
+        {0, 1, 2, 3, 4, 5},
+        {0, 1, 2, 3, 4, 5},
+    };
+    h1 = new int[][] {
+        {1, 0, 2, 3, 4, 5},
+        {0, 1, 2, 3, 4, 5},
+        {0, 1, 2, 3, 4, 5},
+        {0, 1, 2, 3, 4, 5},
+        {0, 1, 2, 3, 4, 5},
+    };
+    h2 = new int[][] {
+        {1, 2, 0, 3, 4, 5},
+        {0, 1, 2, 3, 4, 5},
+        {0, 1, 2, 3, 4, 5},
+        {0, 1, 2, 3, 4, 5},
+        {0, 1, 2, 3, 4, 5},
+    };
+    h3 = new int[][] {
+        {1, 2, 3, 0, 4, 5},
+        {0, 1, 2, 3, 4, 5},
+        {0, 1, 2, 3, 4, 5},
+        {0, 1, 2, 3, 4, 5},
+        {0, 1, 2, 3, 4, 5},
+    };
     start1 = new int[][] {
       {0, 0, 0},
       {1, 1, 1},
@@ -241,7 +277,7 @@ public class BoardTest {
     long s2 = 0b111000000;
     long tx = 0b0;
 
-    Board bstart2 = new Board(s0, s1, s2, tx, tx, tx, 0);
+    Board bstart2 = new Board(s0, s1, s2, tx, tx, tx, tx, tx, 0);
     assertEquals(0, bstart1.hamming(target1));
     assertEquals(0, bstart2.hamming(target1));
 
@@ -249,15 +285,27 @@ public class BoardTest {
     long c1 = 0b111;
     long c2 = 0b111000;
 
-    Board bstart3 = new Board(c0, c1, c2, tx, tx, tx, 0);
+    Board bstart3 = new Board(c0, c1, c2, tx, tx, tx, tx, tx, 0);
     assertEquals(9, bstart3.hamming(target1));
 
     long d0 = 0b111000;
     long d1 = 0b111;
     long d2 = 0b111000000;
 
-    Board bstart4 = new Board(d0, d1, d2, tx, tx, tx, 0);
+    Board bstart4 = new Board(d0, d1, d2, tx, tx, tx, tx, tx, 0);
     assertEquals(6, bstart4.hamming(target1));
+  }
 
+  @org.junit.Test
+  public void specificHamming() {
+    Board hstart = new Board(hStart, 0);
+    Board htarget = new Board(hTarget, 5);
+    Board state1 = new Board(h1, 0);
+    Board state2 = new Board(h2, 0);
+    Board state3 = new Board(h3, 0);
+    System.out.println(hstart.hamming(htarget));
+    System.out.println(state1.hamming(htarget));
+    System.out.println(state2.hamming(htarget));
+    System.out.println(state3.hamming(htarget));
   }
 }
