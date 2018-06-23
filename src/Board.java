@@ -28,8 +28,8 @@ public class Board {
     this.bb3 = bb3;
     this.bb4 = bb4;
     this.bb5 = bb5;
-    this.bb5 = bb6;
-    this.bb5 = bb7;
+    this.bb6 = bb6;
+    this.bb7 = bb7;
     this.movePosition = movePosition;
   }
 
