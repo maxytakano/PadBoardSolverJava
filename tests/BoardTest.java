@@ -12,9 +12,50 @@ public class BoardTest {
   int[][] big1, big1a, big2, big3;
   int[][] medium4x4s, medium4x4t;
   int[][] hStart, h1, h2, h3, h4, hTarget;
+  int[][] allBB, allBBr, allBBl, allBBu, allBBd;
 
   @Before
   public void init() {
+    allBB = new int[][] {
+        {6, 1, 2, 7, 0, 6},
+        {5, 6, 3, 3, 6, 5},
+        {0, 7, 5, 4, 2, 1},
+        {2, 6, 1, 3, 6, 3},
+        {6, 4, 0, 4, 7, 6}
+    };
+
+    allBBl = new int[][] {
+        {6, 1, 2, 7, 0, 6},
+        {5, 6, 3, 3, 6, 5},
+        {0, 5, 7, 4, 2, 1},
+        {2, 6, 1, 3, 6, 3},
+        {6, 4, 0, 4, 7, 6}
+    };
+
+    allBBr = new int[][] {
+        {6, 1, 2, 7, 0, 6},
+        {5, 6, 3, 3, 6, 5},
+        {0, 7, 4, 5, 2, 1},
+        {2, 6, 1, 3, 6, 3},
+        {6, 4, 0, 4, 7, 6}
+    };
+
+    allBBu = new int[][] {
+        {6, 1, 2, 7, 0, 6},
+        {5, 6, 5, 3, 6, 5},
+        {0, 7, 3, 4, 2, 1},
+        {2, 6, 1, 3, 6, 3},
+        {6, 4, 0, 4, 7, 6}
+    };
+
+    allBBd = new int[][] {
+        {6, 1, 2, 7, 0, 6},
+        {5, 6, 3, 3, 6, 5},
+        {0, 7, 1, 4, 2, 1},
+        {2, 6, 5, 3, 6, 3},
+        {6, 4, 0, 4, 7, 6}
+    };
+
     hStart = new int[][] {
         {0, 1, 2, 3, 4, 5},
         {0, 1, 2, 3, 4, 5},
@@ -307,5 +348,24 @@ public class BoardTest {
     System.out.println(state1.hamming(htarget));
     System.out.println(state2.hamming(htarget));
     System.out.println(state3.hamming(htarget));
+  }
+
+  @org.junit.Test
+  public void bigBoardTest() {
+    Board bigBoardStart = new Board(allBB, 14);
+    Board bigBoardl = new Board(allBBl, 13);
+    Board bigBoardr = new Board(allBBr, 15);
+    Board bigBoardu = new Board(allBBu, 8);
+    Board bigBoardd = new Board(allBBd, 20);
+
+    Board[] neighborSet = {bigBoardl, bigBoardr, bigBoardu, bigBoardd};
+
+    Iterator<Board> neighbors = bigBoardStart.neighbors().iterator();
+    int i = 0;
+    while (neighbors.hasNext()) {
+      Board curNeighbor = neighbors.next();
+      assertEquals(curNeighbor, neighborSet[i]);
+      i++;
+    }
   }
 }
