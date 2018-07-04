@@ -42,16 +42,16 @@ public class TestClient {
       StdOut.println("Time taken: " + duration);
 
       // print the board out.
-      for (Board b : solver.solution()) {
-        StdOut.println(b);
-      }
+//      for (Board b : solver.solution()) {
+//        StdOut.println(b);
+//      }
     } else {
       StdOut.println("No solution possible");
     }
   }
 
   public static void main(String[] args) {
-    String target_dir = "./testPuzzles/other";
+    String target_dir = "./testPuzzles/metricTest";
     File dir = new File(target_dir);
     File[] files = dir.listFiles();
 

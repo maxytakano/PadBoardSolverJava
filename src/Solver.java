@@ -17,6 +17,7 @@ public class Solver {
     frontier.insert(new Move(startPosition));
     Set<Board> explored = new HashSet<>();
     int dupeCount = 0;
+    int processed = 1;
 
     while (!frontier.isEmpty()) {
       Move bestMove = frontier.delMin();
@@ -28,6 +29,11 @@ public class Solver {
       if (bestMove.board.isGoal(targetPosition)) {
         lastMove = bestMove;
         System.out.println("dupe count: " + dupeCount);
+        int d = minMoves();
+        int n = processed;
+        System.out.println("Processed (N): " + processed);
+        System.out.println("Depth of solution (D): " + d);
+        System.out.println("Approximate branching factor (b*): " + Math.pow(n, (1.0/d)));
         System.out.println("PQ size: " + frontier.size());
         return;
       }
@@ -44,6 +50,7 @@ public class Solver {
 //        boolean finalCheck = memoryOptimization;
 
         if (finalCheck) {
+          processed++;
           frontier.insert(new Move(neighbor, bestMove));
         }
       }
@@ -67,12 +74,21 @@ public class Solver {
       this.numMoves = previous.numMoves + 1;
     }
 
+    /**
+     * Priority = f(x) = h(x) + g(x) where h is a chosen heuristic and
+     * g is the number of moves made.  When h is admissible, solution is proven optimal,
+     * otherwise solution can be reached quicker but will not be optimal always.
+     * @param move to compare
+     * @return priority of a given move
+     */
     @Override
     public int compareTo(Move move) {
 //      return (this.board.manhattan() - move.board.manhattan()) + (this.numMoves - move.numMoves);
       int moveComponent = this.numMoves - move.numMoves;
       int hammingComponent = this.board.hamming(targetPosition) - move.board.hamming(targetPosition);
-      return (hammingComponent) + moveComponent;
+      // priority = f(x) = h(x) + g(x) where
+      // Multiplying the
+      return (hammingComponent) + (moveComponent);
     }
   }
 
