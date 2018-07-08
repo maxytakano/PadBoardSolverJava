@@ -43,7 +43,7 @@ public class boardPlayground {
     System.out.println(targetBoard);
     System.out.println(startBoard.hamming(targetBoard));
 
-    Solver solver = new Solver(startBoard, targetBoard);
+    Solver solver = new Solver(startBoard, targetBoard, false);
     System.out.println("Solved");
 
   }

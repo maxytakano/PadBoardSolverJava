@@ -33,7 +33,8 @@ public class TestClient {
     Board startBoard = new Board(startPosition, movePosition);
     Board targetBoard = new Board(targetPosition, movePosition);
 
-    Solver solver = new Solver(startBoard, targetBoard);
+    Solver solver = new Solver(startBoard, targetBoard, false);
+
 
     if (solver.isSolvable()) {
       long endTime = System.currentTimeMillis();
@@ -41,17 +42,17 @@ public class TestClient {
       StdOut.println("Min moves: " + solver.minMoves());
       StdOut.println("Time taken: " + duration);
 
-      // print the board out.
-//      for (Board b : solver.solution()) {
-//        StdOut.println(b);
-//      }
+      //   print the board out.
+      for (Board b : solver.solution()) {
+        StdOut.println(b);
+      }
     } else {
       StdOut.println("No solution possible");
     }
   }
 
   public static void main(String[] args) {
-    String target_dir = "./testPuzzles/metricTest";
+    String target_dir = "./testPuzzles/other";
     File dir = new File(target_dir);
     File[] files = dir.listFiles();
 

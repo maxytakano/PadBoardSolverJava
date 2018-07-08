@@ -272,21 +272,21 @@ public class BoardTest {
     Board[] neighborSet2 = {bn2R, bn2D};
     Board[] neighborSet3 = {bn3L, bn3U};
 
-    Iterator<Board> neighbors1 = bstart1.neighbors().iterator();
+    Iterator<Board> neighbors1 = bstart1.neighbors(false).iterator();
     int i = 0;
     while (neighbors1.hasNext()) {
       Board curNeighbor = neighbors1.next();
       assertEquals(curNeighbor, neighborSet1[i]);
       i++;
     }
-    Iterator<Board> neighbors2 = bstart2.neighbors().iterator();
+    Iterator<Board> neighbors2 = bstart2.neighbors(false).iterator();
     i = 0;
     while (neighbors2.hasNext()) {
       Board curNeighbor = neighbors2.next();
       assertEquals(curNeighbor, neighborSet2[i]);
       i++;
     }
-    Iterator<Board> neighbors3 = bstart3.neighbors().iterator();
+    Iterator<Board> neighbors3 = bstart3.neighbors(false).iterator();
     i = 0;
     while (neighbors3.hasNext()) {
       Board curNeighbor = neighbors3.next();
@@ -360,7 +360,7 @@ public class BoardTest {
 
     Board[] neighborSet = {bigBoardl, bigBoardr, bigBoardu, bigBoardd};
 
-    Iterator<Board> neighbors = bigBoardStart.neighbors().iterator();
+    Iterator<Board> neighbors = bigBoardStart.neighbors(false).iterator();
     int i = 0;
     while (neighbors.hasNext()) {
       Board curNeighbor = neighbors.next();

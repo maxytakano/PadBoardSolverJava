@@ -6,9 +6,16 @@ import java.util.Set;
 
 public class Solver {
   Board targetPosition;
+  private boolean allow8Way;
 
-  public Solver(Board startPosition, Board targetPosition) {
+  public Solver(Board startPosition, Board targetPosition, boolean allow8Way) {
+    // Initialize solve options
+    this.allow8Way = allow8Way;
+
+    // Set target
     this.targetPosition = targetPosition;
+
+    // Initiate Solve
     this.solveBoard(startPosition);
   }
 
@@ -38,7 +45,10 @@ public class Solver {
         return;
       }
 
-      for (Board neighbor : bestMove.board.neighbors()) {
+//      System.out.println("BEST WAS:" + bestMove.board);
+//      System.out.println(allow8Way);
+      for (Board neighbor : bestMove.board.neighbors(allow8Way)) {
+//        System.out.print(neighbor);
         // neighbor not in frontier U explored
         boolean criticalCheck = (bestMove.previous == null || !neighbor.equals(bestMove.previous.board));
 

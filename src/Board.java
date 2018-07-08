@@ -183,14 +183,14 @@ public class Board {
    * Generates linked list of possible neighbors based on moving up, down, left, or right.
    * @return LinkedList<Board> - linked list of neighbor board states (order L, R, U D)
    */
-  public Iterable<Board> neighbors() {
+  public Iterable<Board> neighbors(boolean allow8Way) {
     // TODO: Compare List/array/etc. performance.
     LinkedList<Board> neighbors = new LinkedList<>();
 
     int moveRow = movePosition / width;
     int moveCol = movePosition % width;
 
-    // Check if we can move left.
+    // Left
     if (moveCol > 0) {
       Board shiftLeft = swapCells(movePosition, movePosition - 1);
       neighbors.add(shiftLeft);
@@ -209,6 +209,30 @@ public class Board {
     if (moveRow < height - 1) {
       Board shiftDown = swapCells(movePosition, movePosition + width);
       neighbors.add(shiftDown);
+    }
+
+    // if diagonal movement enabled, add diagonal neighbors
+    if (allow8Way) {
+      // Up + Left
+      if (moveRow > 0 && moveCol > 0) {
+        Board shiftUL = swapCells(movePosition, movePosition - width - 1);
+        neighbors.add(shiftUL);
+      }
+      // Up + Right
+      if (moveRow > 0 && (moveCol < width - 1)) {
+        Board shiftUR = swapCells(movePosition, movePosition - width + 1);
+        neighbors.add(shiftUR);
+      }
+      // Down + Left
+      if ((moveRow < height - 1) && moveCol > 0) {
+        Board shiftDL = swapCells(movePosition, movePosition + width - 1);
+        neighbors.add(shiftDL);
+      }
+      // Down + Right
+      if ((moveRow < height - 1) && (moveCol < width - 1)) {
+        Board shiftDR = swapCells(movePosition, movePosition + width + 1);
+        neighbors.add(shiftDR);
+      }
     }
 
     return neighbors;
